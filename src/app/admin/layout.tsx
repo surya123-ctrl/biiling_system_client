@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaBars } from 'react-icons/fa';
 import { ReactNode } from 'react';
-
+import ProtectedAdminRoute from '@/components/ProtectedAdminRoute';
 interface LayoutProps {
   children: ReactNode;
 }
@@ -39,7 +39,9 @@ export default function AdminLayout({ children }: LayoutProps) {
 
         {/* Page Content (Scrolls if needed) */}
         <main className="flex-1 overflow-auto">
-          {children}
+          <ProtectedAdminRoute>
+            {children}
+          </ProtectedAdminRoute>
         </main>
       </div>
     </div>

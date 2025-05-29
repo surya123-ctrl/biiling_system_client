@@ -2,12 +2,20 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Profiler } from 'react';
 import { X, Menu, Store, Settings, ChevronLeft, User, LogOut } from 'lucide-react';
-
+import { useDispatch } from 'react-redux';
+import { logout } from '@/lib/features/authSlice';
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 export default function Sidebar() {
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const email = user?.email;
 
   // Close mobile menu when pathname changes
   useEffect(() => {
@@ -29,9 +37,15 @@ export default function Sidebar() {
   const navLinks = [
     { href: '/admin/dashboard', label: 'Shops', icon: Store, badge: null },
     { href: '/admin/settings', label: 'Settings', icon: Settings, badge: null },
+    { href: '/admin/profile', label: 'Profile', icon: User, badge: null },
   ];
 
   const isActive = (href: any) => pathname === href;
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push('/login')
+  }
 
   return (
     <>
@@ -130,12 +144,15 @@ export default function Sidebar() {
               Quick Actions
             </h2>
             
-            <button className="w-full flex items-center gap-3 py-3 px-3 rounded-xl font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group">
+            {/* <button className="w-full flex items-center gap-3 py-3 px-3 rounded-xl font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group">
               <User className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
               <span>Profile</span>
-            </button>
+            </button> */}
             
-            <button className="w-full flex items-center gap-3 py-3 px-3 rounded-xl font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group">
+            <button 
+              onClick={() => handleLogout()}
+              className="w-full flex items-center gap-3 py-3 px-3 rounded-xl font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-200 group"
+            >
               <LogOut className="w-5 h-5 text-gray-400 group-hover:text-red-500" />
               <span>Sign Out</span>
             </button>
@@ -151,7 +168,7 @@ export default function Sidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 text-sm truncate">Admin User</p>
-                <p className="text-xs text-gray-500 truncate">admin@example.com</p>
+                <p className="text-xs text-gray-500 truncate">{email}</p>
               </div>
             </div>
           </div>

@@ -197,10 +197,10 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         {/* Stats */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <StatCard label="Total Items" value={items.length} color="indigo" icon="📦" />
-                            <StatCard label="Total Value" value={`₹${totalValue.toFixed(0)}`} color="emerald" icon="💰" />
-                            <StatCard label="Categories" value={categories.length - 1} color="purple" icon="🏷️" />
-                            <StatCard label="Avg Price" value={`₹${avgPrice.toFixed(0)}`} color="orange" icon="📊" />
+                            <StatCard index="1" label="Total Items" value={items.length} color="indigo" icon="📦" />
+                            <StatCard index="2" label="Total Value" value={`₹${totalValue.toFixed(0)}`} color="emerald" icon="💰" />
+                            <StatCard index="3" label="Categories" value={categories.length - 1} color="purple" icon="🏷️" />
+                            <StatCard index="4" label="Avg Price" value={`₹${avgPrice.toFixed(0)}`} color="orange" icon="📊" />
                         </div>
 
                         {/* Controls */}
@@ -395,11 +395,13 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
 // Enhanced Helper Components
 
 const StatCard = ({
+    index,
     label,
     value,
     color,
     icon,
 }: {
+    index: string,
     label: string;
     value: string | number;
     color: 'indigo' | 'emerald' | 'purple' | 'orange';
@@ -413,7 +415,7 @@ const StatCard = ({
     };
 
     return (
-        <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg hover:shadow-xl transition-all group">
+        <div key={index} className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg hover:shadow-xl transition-all group">
             <div className="flex items-center justify-between mb-2">
                 <div className={`w-10 h-10 bg-gradient-to-br ${colorClasses[color].bg} rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}>
                     <span>{icon}</span>
@@ -454,53 +456,55 @@ const MenuItemCard = ({
     };
     if (viewMode === 'list') {
         return (
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-white/30 p-6 transition-all duration-300 group"
-            >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                        <div className={`w-14 h-14 bg-gradient-to-br ${categoryStyle.bg} rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
-                            <span className="text-xl">{categoryStyle.icon}</span>
+            <div key={index}>
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-white/30 p-6 transition-all duration-300 group"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                            <div className={`w-14 h-14 bg-gradient-to-br ${categoryStyle.bg} rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                                <span className="text-xl">{categoryStyle.icon}</span>
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-gray-800 text-xl mb-1">{item.name}</h3>
+                                <div className="flex items-center gap-3">
+                                    {item.category && (
+                                        <span className={`text-xs ${categoryStyle.text} bg-white px-3 py-1 rounded-full font-medium shadow-sm`}>
+                                            {item.category}
+                                        </span>
+                                    )}
+                                    <span className="text-sm text-gray-500">per {item.unit}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-gray-800 text-xl mb-1">{item.name}</h3>
-                            <div className="flex items-center gap-3">
-                                {item.category && (
-                                    <span className={`text-xs ${categoryStyle.text} bg-white px-3 py-1 rounded-full font-medium shadow-sm`}>
-                                        {item.category}
-                                    </span>
-                                )}
-                                <span className="text-sm text-gray-500">per {item.unit}</span>
+                        <div className="flex items-center gap-6">
+                            <div className="text-right">
+                                <div className="text-3xl font-bold text-indigo-600">₹{getPrice(item.price).toFixed(2)}</div>
+                                <div className="text-sm text-gray-500">per {item.unit}</div>
+                            </div>
+                            <div className="flex gap-2">
+                                <button className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl font-medium transition-colors shadow-md hover:shadow-lg">
+                                    ✏️
+                                </button>
+                                <button className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl font-medium transition-colors shadow-md hover:shadow-lg">
+                                    🗑️
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                        <div className="text-right">
-                            <div className="text-3xl font-bold text-indigo-600">₹{getPrice(item.price).toFixed(2)}</div>
-                            <div className="text-sm text-gray-500">per {item.unit}</div>
-                        </div>
-                        <div className="flex gap-2">
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl font-medium transition-colors shadow-md hover:shadow-lg">
-                                ✏️
-                            </button>
-                            <button className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl font-medium transition-colors shadow-md hover:shadow-lg">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {item.description && (
-                    <p className="text-gray-600 mt-4 pl-18">{item.description}</p>
-                )}
-            </motion.div>
+                    {item.description && (
+                        <p className="text-gray-600 mt-4 pl-18">{item.description}</p>
+                    )}
+                </motion.div>
+            </div>
         );
     }
 
     return (
-        <>
+        <div key={index}>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -570,7 +574,7 @@ const MenuItemCard = ({
                     onConfirm={confirmDelete}
                 />
             </AnimatePresence>
-        </>
+        </div>
     );
 };
 

@@ -3,19 +3,51 @@ import React from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { POST } from '../../../services/api';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '@/lib/features/authSlice';
 const AdminLoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const dispatch = useDispatch();
+    const router = useRouter();
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
+        dispatch(loginStart());
         setIsLoading(true);
         try {
             const data = await POST('/admin/login', { email, password });
-            window.location.href = '/admin/dashboard';
+            console.log(data)
+            if(data.success === true) {
+                dispatch(loginSuccess({
+                    token: data.data.token,
+                    user: data.data.admin,
+                }))
+                switch(data.data.admin.role) {
+                    case 'admin':
+                        router.push('/admin/dashboard');
+                        break;
+                    case 'user':
+                        router.push('/admin/settings');
+                        break;
+                }
+                // router.push('/admin/dashboard');
+            }
+            else {
+                dispatch(loginFailure({
+                    error: 'Invalid credentials: Please Check Email & Password'
+                }))
+            }
         }
         catch (err: any) {
+            const errorMessage = 'Network Error or server unreachable.';
+            setError(errorMessage);
+            dispatch(loginFailure({
+                error: errorMessage
+            }))
             console.error(err)
         }
         finally {

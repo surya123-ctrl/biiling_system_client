@@ -1,21 +1,38 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Camera, RotateCcw, Zap, ShoppingBag, AlertCircle, CheckCircle, Scan } from 'lucide-react';
 import QrCode from 'jsqr';
-import { GET } from '../../services/api'
+import { GET, POST } from '../../services/api'
 export default function JsQrScannerPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [result, setResult] = useState<string | null>(null);
-  const generateToken = async () => {
-    try {
-      const data = await GET('/token/generate-token');
-      console.log('Token Response:', data);
-    } catch (err) {
-      console.error('Error fetching token:', err);
+  // const generateToken = async () => {
+  //   try {
+  //     const data = await GET('/token/generate-token');
+  //     console.log('Token Response:', data);
+  //   } catch (err) {
+  //     console.error('Error fetching token:', err);
+  //   }
+  // };
+  const handleScanResult = async (scannedText: string) => {
+    setResult(scannedText);
+    console.log('Scanned Text:', scannedText);
+    if(scannedText.startsWith('SLIP-START')) {
+      const parts = scannedText.split(' ');
+      if(parts.length > 2) return;
+      const shopId = parts[1];
+      try {
+        const data = await POST(`/customer/scanner/start`, { shopId });
+        console.log('Start Slip Response:', data);
+      }
+      catch (err) {
+        console.error("❌ Failed to generate token", err);
+        alert("Error generating slip");
+      }
     }
-  };
-
+  }
   useEffect(() => {
     let streaming = false;
     let animationFrameId: number;
@@ -44,14 +61,15 @@ export default function JsQrScannerPage() {
           const code = QrCode(imageData.data, imageData.width, imageData.height);
 
           if (code) {
-            const scannedText = code.data;
-            console.log(scannedText)
-            setResult(scannedText);
+            // const scannedText = code.data;
+            // console.log(scannedText)
+            // setResult(scannedText);
 
             // Only generate token if it's SLIP-START
-            if (scannedText === 'SLIP-START') {
-              generateToken();
-            }
+            // if (scannedText === 'SLIP-START') {
+            //   generateToken();
+            // }
+            handleScanResult(code.data);
             cancelAnimationFrame(animationFrameId);
             return;
           }

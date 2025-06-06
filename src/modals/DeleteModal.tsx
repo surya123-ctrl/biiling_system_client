@@ -59,7 +59,7 @@ const DeleteModal: FC<DeleteModalProps> = ({ item, isOpen, onClose, onConfirm })
 
   return (
     <ModalBackdrop onClose={onClose}>
-      <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden max-w-lg w-full mx-4">
+      <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden max-w-lg w-full">
         {/* Clean Header */}
         <div className="bg-white border-b border-gray-100 px-6 py-6">
           <div className="flex items-center justify-between">

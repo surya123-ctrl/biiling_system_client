@@ -4,10 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera, RotateCcw, Zap, ShoppingBag, AlertCircle, CheckCircle, Scan } from 'lucide-react';
 import QrCode from 'jsqr';
 import { GET, POST } from '../../services/api'
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '@/lib/features/authSlice';
 export default function JsQrScannerPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [result, setResult] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const router = useRouter();
   // const generateToken = async () => {
   //   try {
   //     const data = await GET('/token/generate-token');
@@ -17,6 +22,7 @@ export default function JsQrScannerPage() {
   //   }
   // };
   const handleScanResult = async (scannedText: string) => {
+    dispatch(loginStart());
     setResult(scannedText);
     console.log('Scanned Text:', scannedText);
     if(scannedText.startsWith('SLIP-START')) {
@@ -25,7 +31,20 @@ export default function JsQrScannerPage() {
       const shopId = parts[1];
       try {
         const data = await POST(`/customer/scanner/start`, { shopId });
+
         console.log('Start Slip Response:', data);
+        if(data.success === true) {
+          dispatch(loginSuccess({
+            token: data.data.newCustomer.token,
+            user: data.data.newCustomer
+          }))
+          router.push(`/customer/menu`);
+        }
+        else {
+          dispatch(loginFailure({
+            error: 'Invalid credentials: Please Scan QR code again!'
+          }))
+        }
       }
       catch (err) {
         console.error("❌ Failed to generate token", err);

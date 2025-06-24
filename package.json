@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.5",
     "@ericblade/quagga2": "^1.8.4",
     "@reduxjs/toolkit": "^2.8.2",
     "aos": "^2.3.4",

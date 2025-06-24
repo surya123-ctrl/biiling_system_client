@@ -1,5 +1,5 @@
 'use client';
-import React, { use } from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,8 @@ import { GET, POST } from '@/services/api';
 import { X, Edit3, Trash2, AlertTriangle, Save, Package, DollarSign, Hash } from 'lucide-react';
 import EditModal from '@/modals/EditModal';
 import DeleteModal from '@/modals/DeleteModal';
+import { useSelector } from 'react-redux';
+import { RootState } from "@/lib/store";
 interface MenuItem {
     _id?: string;
     name: string;
@@ -38,8 +40,8 @@ const CATEGORY_COLORS = {
     'default': { bg: 'from-purple-400 to-indigo-400', text: 'text-purple-600', icon: '🍯' }
 };
 
-const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
-    const { id } = use(params);
+const ShopMenuPage = () => {
+    const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
     const [items, setItems] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -47,7 +49,6 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
     const [showModal, setShowModal] = useState(false);
     const [sortBy, setSortBy] = useState('name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
     // Form state
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -58,7 +59,7 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
     useEffect(() => {
         const fetchMenu = async () => {
             try {
-                const data = await GET(`/admin/menu/${id}`);
+                const data = await GET(`/menu/getMenu/${user?._id}`);
                 setItems(data.data.items || []);
                 console.log(items)
             } catch (error) {
@@ -68,7 +69,7 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
             }
         };
         fetchMenu();
-    }, [id]);
+    }, []);
 
     // Handle Add Item
     const handleAddItem = async (e: React.FormEvent) => {
@@ -76,7 +77,7 @@ const ShopMenuPage = ({ params }: { params: Promise<any> }) => {
         if (!name || !price || !unit) return alert('Please fill in required fields.');
 
         try {
-            const newItem = { shopId: id, name, price: parseFloat(price), unit, description };
+            const newItem = { shopId: user?._id, name, price: parseFloat(price), unit, description };
             const data = await POST(`/menu/add`, newItem);
             setItems((prev) => [...prev, data.data.item]);
             setShowModal(false);

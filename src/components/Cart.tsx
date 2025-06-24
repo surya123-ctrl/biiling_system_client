@@ -3,6 +3,8 @@ import { ShoppingCart, Minus, Plus, Trash2, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from "@/lib/store";
 import { POST } from '../services/api'
+import { useRouter } from 'next/navigation';
+import CustomerDetailsModal from './CustomerDetailModal';
 interface CartItem {
   _id: string;
   name: string;
@@ -32,8 +34,12 @@ const Cart: React.FC<CartProps> = ({
   clearFromCart,
   clearCart,
 }) => {
+  const router = useRouter();
   const [checkingOut, setCheckingOut] = useState(false);
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [amount, setAmount] = useState(0);
+  const [orderId, setOrderId] = useState('');
   const getPrice = (price: { $numberDecimal: string } | number): number => {
         return typeof price === 'object' && '$numberDecimal' in price
             ? parseFloat(price.$numberDecimal)
@@ -66,6 +72,16 @@ const Cart: React.FC<CartProps> = ({
       console.log(payload)
       const data = await POST('/order/proceed-checkout', payload);
       console.log(data);
+      if(data.success === true) {
+        // router.push(`/customer/payment?customerId=${user._id}&orderId=${data.data.orderId}&amount=${data.data.totalAmount.toFixed(2)}`);
+        setAmount(data.data.totalAmount);
+        setOrderId(data.data.orderId);
+        setIsModalOpen(true);
+        
+      }
+      else {
+        alert('Failed to place order');
+      }
     }
     catch(error) {
       console.error(error)
@@ -189,6 +205,11 @@ const Cart: React.FC<CartProps> = ({
           </div>
         </div>
       )}
+      {
+        isModalOpen && (
+          <CustomerDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} amount={amount} orderId={orderId} />
+        )
+      }
     </>
   );
 };

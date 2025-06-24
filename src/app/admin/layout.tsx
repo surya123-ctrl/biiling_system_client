@@ -13,9 +13,17 @@ interface LayoutProps {
 export default function AdminLayout({ children }: LayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const pathname = usePathname();
+  const hideLayouts =
+      pathname === '/admin/login' ||
+      pathname === '/admin/signup' ||
+      // pathname === '/admin/' ||
+      pathname.includes('/menu/builder');
 
-  const hideLayoutRoutes = ['/admin/login', '/admin/signup'];
-  const hideLayouts = hideLayoutRoutes.includes(pathname);
+    if (hideLayouts) {
+      return <>{children}</>;
+    }
+  // const hideLayoutRoutes = ['/admin/login', '/admin/signup', '/admin/shops'];
+  // const hideLayouts = hideLayoutRoutes.includes(pathname);
 
   if (hideLayouts) {
     return <>{children}</>;

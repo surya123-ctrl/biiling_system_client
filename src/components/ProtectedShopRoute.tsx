@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '@/lib/features/authSlice';
 import type { RootState } from '@/lib/store';
 
-const ProtectedAdminRoute = ({ children }) => {
+const ProtectedShopRoute = ({ children }) => {
     const router = useRouter();
     const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
     const [loading, setLoading] = useState(true)
@@ -16,7 +16,7 @@ const ProtectedAdminRoute = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         const storedUser = localStorage.getItem('authUser');
-        if(isAuthenticated && user?.role === 'admin') {
+        if(isAuthenticated && user?.role === 'user') {
             setLoading(false);
             return;
         }
@@ -25,7 +25,7 @@ const ProtectedAdminRoute = ({ children }) => {
             try {
                 const parsedUser = JSON.parse(storedUser);
                 console.log(parsedUser, "paresd")
-                if(parsedUser.role === 'admin') {
+                if(parsedUser.role === 'user') {
                     dispatch(loginSuccess({
                         token: token,
                         user: parsedUser,
@@ -34,8 +34,8 @@ const ProtectedAdminRoute = ({ children }) => {
                     return;
                 }
                 else {
-                    console.log('🚫 User is not an admin');
-                    router.push('/admin/unauthorized');
+                    console.log('🚫 User is not an user');
+                    router.push('/shop/unauthorized');
                 }
             }
             catch (err) {
@@ -49,8 +49,8 @@ const ProtectedAdminRoute = ({ children }) => {
             router.push('/login');
         }
 
-        if(isAuthenticated && user?.role !== 'admin') {
-            router.push('/admin/unauthorized');
+        if(isAuthenticated && user?.role !== 'user') {
+            router.push('/shop/unauthorized');
         }
 
         // setLoading(false);
@@ -61,7 +61,7 @@ const ProtectedAdminRoute = ({ children }) => {
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
             <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Verifying admin access...</p>
+            <p className="text-gray-600">Verifying user access...</p>
             </div>
         </div>
         );
@@ -69,4 +69,4 @@ const ProtectedAdminRoute = ({ children }) => {
     return <>{children}</>;
 }
 
-export default ProtectedAdminRoute;
+export default ProtectedShopRoute;

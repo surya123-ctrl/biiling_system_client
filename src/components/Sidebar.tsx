@@ -55,7 +55,7 @@ export default function Sidebar() {
   const shopLinks = [
     { href: '/shop/dashboard', label: 'Dashboard', icon: Store },
     { href: '/shop/menu', label: 'Manage Menu', icon: Package },
-    { href: '/shop/orders', label: 'Order Queue', icon: ClipboardList },
+    { href: '/shop/order-queue', label: 'Order Queue', icon: ClipboardList },
     { href: '/shop/settings', label: 'Shop Settings', icon: Settings },
     { href: '/shop/profile', label: 'Profile', icon: User }
   ];

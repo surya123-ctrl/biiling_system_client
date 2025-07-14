@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import { GET, POST } from '@/services/api';
-import { io } from 'socket.io-client';
+import { socket } from '@/utils/socket';
 import {
     Package,
     Clock,
@@ -28,8 +28,6 @@ import {
     Zap,
     Activity
 } from 'lucide-react';
-
-const socket = io('http://localhost:5000');
 
 const OrderQueuePage = () => {
     const router = useRouter();

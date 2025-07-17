@@ -20,7 +20,7 @@ const ModalBackdrop: FC<ModalBackdropProps> = ({ children, onClose }) => (
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.95, opacity: 0, y: 20 }}
       transition={{ type: "spring", damping: 25, stiffness: 300 }}
-      className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden border border-gray-100"
+      className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90dvh] overflow-hidden border border-gray-100"
       onClick={(e) => e.stopPropagation()}
     >
       {children}

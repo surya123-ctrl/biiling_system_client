@@ -1,12 +1,13 @@
 import toast from 'react-hot-toast';
-
 const BASE_URL = 'http://localhost:5000';
-
 const GET = async (endpoint, headers = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'GET',
-      headers,
+      headers: {
+        Authorization: token
+      },
     });
     const data = await handleResponse(res);
     showToastIfMessage(data);
@@ -17,11 +18,13 @@ const GET = async (endpoint, headers = {}) => {
 };
 
 const POST = async (endpoint, body = {}, headers = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: token,
         ...headers,
       },
       body: JSON.stringify(body),
@@ -35,11 +38,13 @@ const POST = async (endpoint, body = {}, headers = {}) => {
 };
 
 const PUT = async (endpoint, body = {}, headers = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: token,
         ...headers,
       },
       body: JSON.stringify(body),
@@ -53,9 +58,11 @@ const PUT = async (endpoint, body = {}, headers = {}) => {
 };
 
 const DELETE = async (endpoint, headers = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: 'DELETE',
+      Authorization: token,
       headers,
     });
     const data = await handleResponse(res);
